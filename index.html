@@ -3938,15 +3938,15 @@ body.guest-mode .add-btn-fab{display:none;}
       </div>
       <div class="finance-summary-row" data-page-node-id="SYRUdR4WWEbcUr4BcNytcG">
         <div class="finance-sum-card" data-page-node-id="EgzWKk24mvMgP2XUXAVGXD">
-          <div class="finance-sum-label" data-page-node-id="lgyHQ6Q4Ks0WWhbfqEW95T">本月支出</div>
+          <div class="finance-sum-label" id="finLabelExp" data-page-node-id="lgyHQ6Q4Ks0WWhbfqEW95T">本月支出</div>
           <div class="finance-sum-val expense" id="finMonthExpense" data-page-node-id="nrJAQt2uBwNQt40y8ZZ4wj">¥0</div>
         </div>
         <div class="finance-sum-card" data-page-node-id="0GNuSImFHAdfA9hgcwY5Eo">
-          <div class="finance-sum-label" data-page-node-id="BmN9JC6ySsAsGFp5xMcfkD">本月收入</div>
+          <div class="finance-sum-label" id="finLabelInc" data-page-node-id="BmN9JC6ySsAsGFp5xMcfkD">本月收入</div>
           <div class="finance-sum-val income" id="finMonthIncome" data-page-node-id="xobs6lJrtCLZshYAfzJGza">¥0</div>
         </div>
         <div class="finance-sum-card" data-page-node-id="M2g3mtC479tXsckxv8XVyK">
-          <div class="finance-sum-label" data-page-node-id="FkQ7VDcE7z5REGDRyH0X8o">本月结余</div>
+          <div class="finance-sum-label" id="finLabelBal" data-page-node-id="FkQ7VDcE7z5REGDRyH0X8o">本月结余</div>
           <div class="finance-sum-val balance" id="finMonthBalance" data-page-node-id="jO5IDCBpRUCktirYE903P9">¥0</div>
         </div>
       </div>
@@ -10501,6 +10501,11 @@ function renderFinance(){
   var m=(finViewM===null)?now.getMonth():finViewM;
   var finLabel=document.getElementById(_S('ZmluTW9udGhMYWJlbA=='));
   if(finLabel) finLabel.textContent=y+_S('5bm0')+(m+1)+_S('5pyI')+(_finIsCurrent(y,m)?_S('IMK3IOacrOaciOaUtuaUrw=='):_S(''));
+  /* R34: 汇总卡标题随浏览月切换（本月 → N月） */
+  var _finMLabel=_finIsCurrent(y,m)?_S('5pys5pyI'):(m+1)+_S('5pyI');
+  var _fle=document.getElementById(_S('ZmluTGFiZWxFeHA=')); if(_fle) _fle.textContent=_finMLabel+_S('5pSv5Ye6');
+  var _fli=document.getElementById(_S('ZmluTGFiZWxJbmM=')); if(_fli) _fli.textContent=_finMLabel+_S('5pS25YWl');
+  var _flb=document.getElementById(_S('ZmluTGFiZWxCYWw=')); if(_flb) _flb.textContent=_finMLabel+_S('57uT5L2Z');
   /* R34: 导航按钮状态——下月禁用（不可看未来），非当前月显示「回到本月」 */
   var _finNext=document.getElementById(_S('ZmluTmV4dE1vbnRo'));
   if(_finNext) _finNext.disabled=(y>now.getFullYear()||(y===now.getFullYear()&&m>=now.getMonth()));
