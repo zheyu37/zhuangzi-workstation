@@ -624,10 +624,15 @@ textarea{line-height:1.8;resize:vertical;}
 .quick-link .ql-desc{font-size:12px;color:var(--ink-faded);margin-top:2px;}
 
 /* ====== R29 · 今日时序分层（渐进披露） ====== */
+/* R34: 吸顶——滚动时时段切换条钉在 tab-nav 下方，随时可切换早/日/晚 */
 .flow-bar{
   display:flex;gap:6px;align-items:center;
-  padding:2px 0 10px;
+  padding:8px 0 10px;
+  position:sticky;top:49px;z-index:90;
+  background:var(--bg-paper);
+  box-shadow:0 4px 10px rgba(60,50,30,0.05);
 }
+body.guest-mode .flow-bar{top:89px;}
 .flow-chip{
   flex:1;text-align:center;
   padding:8px 4px;font-size:13px;font-weight:bold;
@@ -641,6 +646,33 @@ textarea{line-height:1.8;resize:vertical;}
   color:var(--jade-dark);
 }
 .flow-chip .fc-sub{display:block;font-size:10px;font-weight:normal;color:var(--ink-faded);margin-top:1px;}
+/* R34: 记账月份切换导航 */
+.fin-month-nav{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;}
+.fin-month-nav #finMonthLabel{text-align:center;font-size:13px;color:var(--ink-faded);min-width:110px;}
+.fmn-btn{
+  width:30px;height:30px;border-radius:50%;border:1px solid var(--border);
+  background:var(--bg-card);color:var(--ink-light);font-size:15px;line-height:1;
+  cursor:pointer;transition:var(--transition);flex-shrink:0;user-select:none;
+}
+.fmn-btn:hover{border-color:var(--jade);color:var(--jade-dark);}
+.fmn-btn:disabled{opacity:0.35;cursor:default;}
+.fmn-btn.fmn-now{width:auto;border-radius:14px;padding:0 12px;font-size:12px;}
+/* R34: 打卡补录 */
+.bf-link{font-size:12px;color:var(--gold);cursor:pointer;user-select:none;}
+.bf-link:hover{text-decoration:underline;}
+.bf-item{
+  display:flex;align-items:center;gap:10px;padding:10px 6px;
+  border-bottom:1px solid var(--border-light);cursor:pointer;user-select:none;
+}
+.bf-item:last-child{border-bottom:none;}
+.bf-toggle{
+  width:22px;height:22px;border-radius:50%;border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:transparent;
+  flex-shrink:0;transition:var(--transition);
+}
+.bf-item.done .bf-toggle{background:var(--jade);border-color:var(--jade);color:#fff;}
+.bf-item .bf-name{font-size:14px;font-weight:bold;}
+.bf-item.done .bf-name{color:var(--jade-dark);}
 .flow-section{margin:0;}
 .flow-sec-head{
   display:flex;align-items:center;gap:8px;
@@ -2989,6 +3021,11 @@ body.guest-mode .add-btn-fab{display:none;}
       </div>
     </div>
 
+      <!-- R34: 往日补录入口 -->
+      <div style="text-align:right;margin-top:4px;">
+        <span class="bf-link" onclick="openBackfillModal()">⟲ 往日补录</span>
+      </div>
+
     <!-- Mood Score -->
     <div class="card" data-page-node-id="XJ54Hlf8oc9CytSZeYbrWY">
       <div class="card-title" data-page-node-id="wHA93nuaR9UHtYB0YdEUsC">
@@ -3893,7 +3930,12 @@ body.guest-mode .add-btn-fab{display:none;}
 
     <!-- Finance panel -->
     <div class="life-panel" id="lifePanel-finance" data-page-node-id="aFiS8mKEgbh5GF2RU202S0">
-      <div id="finMonthLabel" style="text-align:center;font-size:13px;color:var(--ink-faded);margin-bottom:8px;" data-page-node-id="lLXBp6AE0DV3V2gD6T1Mpl"></div>
+      <div class="fin-month-nav" data-page-node-id="lLXBp6AE0DV3V2gD6T1Mpl">
+        <button class="fmn-btn" id="finPrevMonth" onclick="finShiftMonth(-1)" title="上一月">‹</button>
+        <div id="finMonthLabel">本月收支</div>
+        <button class="fmn-btn" id="finNextMonth" onclick="finShiftMonth(1)" title="下一月">›</button>
+        <button class="fmn-btn fmn-now" id="finBackNow" onclick="finGotoCurrentMonth()" style="display:none;">回到本月</button>
+      </div>
       <div class="finance-summary-row" data-page-node-id="SYRUdR4WWEbcUr4BcNytcG">
         <div class="finance-sum-card" data-page-node-id="EgzWKk24mvMgP2XUXAVGXD">
           <div class="finance-sum-label" data-page-node-id="lgyHQ6Q4Ks0WWhbfqEW95T">本月支出</div>
@@ -4252,6 +4294,24 @@ body.guest-mode .add-btn-fab{display:none;}
 </div>
 
 <!-- ====== FINANCE RECORD MODAL ====== -->
+<!-- R34: 往日打卡补录弹窗 -->
+<div class="modal-overlay" id="backfillModal" data-page-node-id="R34bfModal0000000000001">
+  <div class="modal-content" style="max-width:360px;" data-page-node-id="R34bfCard00000000000001">
+    <div class="modal-title" data-page-node-id="R34bfTitle0000000000001">往日打卡补录</div>
+    <div class="hint" style="margin-bottom:10px;" data-page-node-id="R34bfHint0000000000001">昨日遗漏？补录最近 14 天内的五大修行打卡</div>
+    <div class="habit-modal-field" data-page-node-id="R34bfField0000000000001">
+      <label class="form-label" data-page-node-id="R34bfLabel0000000000001">选择日期</label>
+      <input type="date" class="form-input" id="bfDate" onchange="bfLoadDate()" data-page-node-id="R34bfDate00000000000001">
+      <div class="text-faded" id="bfDateWarn" style="font-size:11px;margin-top:4px;display:none;" data-page-node-id="R34bfWarn00000000000001">仅支持补录今天以前的 14 天内</div>
+    </div>
+    <div id="bfList" data-page-node-id="R34bfList00000000000001"></div>
+    <div class="modal-actions" style="display:flex;gap:10px;margin-top:16px;" data-page-node-id="R34bfAct000000000000001">
+      <button class="btn btn-ghost" style="flex:1;" onclick="closeBackfillModal()" data-page-node-id="R34bfCancel000000000001">取消</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="saveBackfill()" data-page-node-id="R34bfSave0000000000001">保存补录</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="financeModal" data-page-node-id="EnK9qnvSAByZhp1tLjukHI">
   <div class="modal-content" style="max-width:400px;" data-page-node-id="I5LzbHCk6dfL698zpsfI91">
     <div class="modal-title" data-page-node-id="CNgCxSRp5xz84Ze056mWFY">记一笔</div>
@@ -5609,12 +5669,115 @@ function onMoodChange(val){
   var rec = getTodayRecord();
   rec.moodScore = parseInt(val);
   saveState();
+  /* R34: 晚间心境 ⇄ 逍遥锚定 打通——改这里，逍遥台自评同步 */
+  var xy = document.getElementById(_S('eGlhb3lhby1zY29yZQ=='));
+  if(xy){
+    xy.value = val;
+    var xv = document.getElementById(_S('eGlhb3lhby1zY29yZS12YWw='));
+    if(xv) xv.textContent = val;
+  }
 }
 
 function saveMainIssue(val){
   var rec = getTodayRecord();
   rec.mainIssue = val;
   saveState();
+}
+
+/* ====== R34: 往日打卡补录（最近 14 天） ====== */
+var BF_KEYS = [_S('d3VqaQ=='),_S('cWl3dQ=='),_S('c2h1bnNoaQ=='),_S('eWFuZ3NoZW5n'),_S('eGlhb3lhbw==')];
+var BF_LABELS = {wuji:_S('5peg5bex5L+u5b+D'),qiwu:_S('6b2Q54mp5aSE5LiW'),shunshi:_S('6aG65Yq/5YGa5LqL'),yangsheng:_S('5YW755Sf5a6I56We'),xiaoyao:_S('6YCN6YGl6ZSa5a6a')};
+var bfState = {};
+var bfDateStr = _S('');
+
+function _bfMaxDateStr(){
+  var d=new Date(); d.setDate(d.getDate()-1);
+  return d.getFullYear()+_S('LQ==')+String(d.getMonth()+1).padStart(2,_S('MA=='))+_S('LQ==')+String(d.getDate()).padStart(2,_S('MA=='));
+}
+function _bfMinDateStr(){
+  var d=new Date(); d.setDate(d.getDate()-14);
+  return d.getFullYear()+_S('LQ==')+String(d.getMonth()+1).padStart(2,_S('MA=='))+_S('LQ==')+String(d.getDate()).padStart(2,_S('MA=='));
+}
+function _bfValidDate(s){
+  if(!s || s>=getToday()) return false;
+  return s>=_bfMinDateStr() && s<=_bfMaxDateStr();
+}
+function _bfGetRecord(dateStr){
+  var r = state.dailyRecords[dateStr];
+  var fresh = newDailyRecord();
+  if(!r || typeof r !== _S('b2JqZWN0') || Array.isArray(r)){
+    r = fresh;
+    state.dailyRecords[dateStr] = r;
+  } else if(!r.checkin || typeof r.checkin !== _S('b2JqZWN0')){
+    r.checkin = fresh.checkin;
+  } else {
+    BF_KEYS.forEach(function(k){ if(!r.checkin[k] || typeof r.checkin[k] !== _S('b2JqZWN0')) r.checkin[k] = fresh.checkin[k]; });
+  }
+  return r;
+}
+function openBackfillModal(){
+  bfState = {};
+  BF_KEYS.forEach(function(k){ bfState[k]=false; });
+  bfDateStr = _bfMaxDateStr();
+  var dEl = document.getElementById(_S('YmZEYXRl'));
+  if(dEl){
+    dEl.min = _bfMinDateStr();
+    dEl.max = _bfMaxDateStr();
+    dEl.value = bfDateStr;
+  }
+  var wEl = document.getElementById(_S('YmZEYXRlV2Fybg=='));
+  if(wEl) wEl.style.display=_S('bm9uZQ==');
+  bfRenderList();
+  var m=document.getElementById(_S('YmFja2ZpbGxNb2RhbA=='));
+  if(m){ m.classList.add(_S('c2hvdw==')); document.body.style.overflow=_S('aGlkZGVu'); }
+}
+function closeBackfillModal(){
+  var m=document.getElementById(_S('YmFja2ZpbGxNb2RhbA=='));
+  if(m){ m.classList.remove(_S('c2hvdw==')); document.body.style.overflow=_S(''); }
+}
+function bfLoadDate(){
+  var dEl=document.getElementById(_S('YmZEYXRl'));
+  var v=dEl?dEl.value:_S('');
+  bfDateStr=v;
+  var wEl=document.getElementById(_S('YmZEYXRlV2Fybg=='));
+  if(!_bfValidDate(v)){
+    if(wEl) wEl.style.display=_S('YmxvY2s=');
+    bfState = {};
+    BF_KEYS.forEach(function(k){ bfState[k]=false; });
+    bfRenderList();
+    return;
+  }
+  if(wEl) wEl.style.display=_S('bm9uZQ==');
+  var r=_bfGetRecord(v);
+  BF_KEYS.forEach(function(k){ bfState[k]=!!(r.checkin[k]&&r.checkin[k].done); });
+  bfRenderList();
+}
+function bfToggleItem(k){
+  bfState[k]=!bfState[k];
+  bfRenderList();
+}
+function bfRenderList(){
+  var el=document.getElementById(_S('YmZMaXN0'));
+  if(!el) return;
+  var html=_S('');
+  BF_KEYS.forEach(function(k){
+    html+=_S('PGRpdiBjbGFzcz0iYmYtaXRlbQ==')+(bfState[k]?_S('IGRvbmU='):_S(''))+_S('IiBvbmNsaWNrPSJiZlRvZ2dsZUl0ZW0oJw==')+k+_S('JykiPg==')+
+      _S('PHNwYW4gY2xhc3M9ImJmLXRvZ2dsZSI+4pyTPC9zcGFuPjxzcGFuIGNsYXNzPSJiZi1uYW1lIj4=')+BF_LABELS[k]+_S('PC9zcGFuPjwvZGl2Pg==');
+  });
+  el.innerHTML=html;
+}
+function saveBackfill(){
+  if(!_bfValidDate(bfDateStr)){
+    showToast(_S('6K+36YCJ5oup5LuK5aSp5Lul5YmN44CBMTQg5aSp5YaF55qE5pel5pyf'), _S('aW5mbw=='));
+    return;
+  }
+  var r=_bfGetRecord(bfDateStr);
+  BF_KEYS.forEach(function(k){ r.checkin[k].done=!!bfState[k]; });
+  saveState();
+  var allDone=BF_KEYS.every(function(k){return r.checkin[k].done;});
+  showToast(allDone ? _S('5bey6KGl5b2VIA==')+bfDateStr+_S('IMK3IOS6lOmhueWchua7oSDinKY=') : _S('5bey6KGl5b2VIA==')+bfDateStr+_S('IOeahOaJk+WNoQ=='), allDone?_S('Z29sZA=='):_S('c3VjY2Vzcw=='));
+  closeBackfillModal();
+  checkAchievements();
 }
 
 /* ================================================================
@@ -6045,6 +6208,15 @@ function saveModuleRecord(moduleKey){
     if(!data.fields.note){
       showToast(_S('6K+35aGr5YaZ6YCN6YGl5oSf6KiA'), _S('aW5mbw=='));
       return;
+    }
+    /* R34: 逍遥锚定 ⇄ 晚间心境 打通——保存自评同步到当日心境评分 */
+    var _xySc = parseInt(data.fields.score, 10);
+    if(!isNaN(_xySc) && _xySc >= 1 && _xySc <= 10){
+      rec.moodScore = _xySc;
+      var _ms = document.getElementById(_S('bW9vZFNjb3Jl'));
+      var _mv = document.getElementById(_S('bW9vZFNjb3JlVmFs'));
+      if(_ms) _ms.value = _xySc;
+      if(_mv) _mv.textContent = _xySc;
     }
   }
   
@@ -10297,10 +10469,43 @@ function getLunarInfoLine(y,m,d){
 }
 function countHabitsOnDate(date){ var dt=parseLocalDate(date); return habitsData.habits.filter(function(h){return !h.archived && h.records[date] && isHabitScheduledOnDate(h,dt);}).length; }
 
+/* ====== R34: 记账历史月份切换 ====== */
+var finViewY=null, finViewM=null;   /* null = 当前月 */
+function _finIsCurrent(y,m){
+  var n=new Date();
+  return y===n.getFullYear() && m===n.getMonth();
+}
+function finShiftMonth(delta){
+  var now=new Date();
+  var y=(finViewY===null)?now.getFullYear():finViewY;
+  var m=(finViewM===null)?now.getMonth():finViewM;
+  m+=delta;
+  if(m<0){m=11;y--;}
+  if(m>11){m=0;y++;}
+  if(y>now.getFullYear() || (y===now.getFullYear()&&m>now.getMonth())){
+    showToast(_S('5LiN6IO95p+l55yL5pyq5p2l5pyI5Lu9'),_S('aW5mbw=='));
+    return;
+  }
+  finViewY=y; finViewM=m;
+  finDisplayCount=20;
+  renderFinance();
+}
+function finGotoCurrentMonth(){
+  finViewY=null; finViewM=null;
+  finDisplayCount=20;
+  renderFinance();
+}
 function renderFinance(){
-  var now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  var now=new Date();
+  var y=(finViewY===null)?now.getFullYear():finViewY;
+  var m=(finViewM===null)?now.getMonth():finViewM;
   var finLabel=document.getElementById(_S('ZmluTW9udGhMYWJlbA=='));
-  if(finLabel) finLabel.textContent=y+_S('5bm0')+(m+1)+_S('5pyIIMK3IOacrOaciOaUtuaUrw==');
+  if(finLabel) finLabel.textContent=y+_S('5bm0')+(m+1)+_S('5pyI')+(_finIsCurrent(y,m)?_S('IMK3IOacrOaciOaUtuaUrw=='):_S(''));
+  /* R34: 导航按钮状态——下月禁用（不可看未来），非当前月显示「回到本月」 */
+  var _finNext=document.getElementById(_S('ZmluTmV4dE1vbnRo'));
+  if(_finNext) _finNext.disabled=(y>now.getFullYear()||(y===now.getFullYear()&&m>=now.getMonth()));
+  var _finBack=document.getElementById(_S('ZmluQmFja05vdw=='));
+  if(_finBack) _finBack.style.display=_finIsCurrent(y,m)?_S('bm9uZQ=='):_S('aW5saW5lLWJsb2Nr');
   var monthExpense=0,monthIncome=0,catTotals={},incomeCatTotals={};
   lifeData.finance.records.forEach(function(r){
     var rd=parseLocalDate(r.date);
@@ -10328,7 +10533,9 @@ function renderFinance(){
       var arrow=Math.abs(diff)<0.5?_S('ZmluLW1vbS1mbGF0'):(diff>0?_S('ZmluLW1vbS11cA=='):_S('ZmluLW1vbS1kb3du'));
       momHtml+=_S('PHNwYW4gY2xhc3M9ImZpbi1tb20tYmFkZ2UiPueOr+avlCA8c3BhbiBjbGFzcz0i')+arrow+_S('Ij4=')+(diff>0?_S('4oaR'):(diff<0?_S('4oaT'):_S('4oCU')))+_S('IA==')+Math.abs(diff).toFixed(1)+_S('JTwvc3Bhbj48L3NwYW4+');
     }
-    momHtml+=_S('PHNwYW4gY2xhc3M9ImZpbi1tb20tYmFkZ2UiPuaXpeWdhyDCpQ==')+(monthExpense/new Date().getDate()).toFixed(1)+_S('PC9zcGFuPg==');
+    /* R34: 日均——当前月按已过天数，历史月按整月天数 */
+    var _finDays=_finIsCurrent(y,m)?now.getDate():new Date(y,m+1,0).getDate();
+    momHtml+=_S('PHNwYW4gY2xhc3M9ImZpbi1tb20tYmFkZ2UiPuaXpeWdhyDCpQ==')+(monthExpense/_finDays).toFixed(1)+_S('PC9zcGFuPg==');
     momEl.innerHTML=momHtml;
   }
   // 月度预算卡
@@ -10361,7 +10568,7 @@ function renderFinance(){
     incHtml+=_S('PGRpdiBjbGFzcz0iZmluLWNhdC10cmFjayI+PGRpdiBjbGFzcz0iZmluLWNhdC1maWxsIiBzdHlsZT0id2lkdGg6')+pct+_S('JTtiYWNrZ3JvdW5kOnZhcigtLWphZGUtZGFyayk7Ij48L2Rpdj48L2Rpdj4=');
     incHtml+=_S('PGRpdiBjbGFzcz0iZmluLWNhdC1hbW91bnQiPsKl')+incomeCatTotals[cat].toFixed(2)+_S('PHNwYW4gc3R5bGU9ImZvbnQtd2VpZ2h0Om5vcm1hbDtjb2xvcjp2YXIoLS1pbmstZmFkZWQpOyI+IA==')+pctOfTotal+_S('JTwvc3Bhbj48L2Rpdj48L2Rpdj4=');
   });
-  if(!incHtml) incHtml=_S('PGRpdiBzdHlsZT0iY29sb3I6dmFyKC0taW5rLWZhZGVkKTt0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nOjhweDsiPuacrOaciOaaguaXoOaUtuWFpTwvZGl2Pg==');
+  if(!incHtml) incHtml=_S('PGRpdiBzdHlsZT0iY29sb3I6dmFyKC0taW5rLWZhZGVkKTt0ZXh0LWFsaWduOmNlbnRlcjtwYWRkaW5nOjhweDsiPuivpeaciOaaguaXoOaUtuWFpTwvZGl2Pg==');
   document.getElementById(_S('ZmluSW5jb21lQnJlYWtkb3du')).innerHTML=incHtml;
   // Yearly summary
   var yearExpense=0,yearIncome=0;
