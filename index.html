@@ -622,6 +622,22 @@ textarea{line-height:1.8;resize:vertical;}
 .quick-link .ql-icon{font-size:24px;margin-bottom:6px;}
 .quick-link .ql-title{font-size:14px;font-weight:bold;}
 .quick-link .ql-desc{font-size:12px;color:var(--ink-faded);margin-top:2px;}
+/* ====== R35 · 五修进度显性化 / 逍遥周报 / 记账快捷 ====== */
+.quick-link{position:relative;}
+.ql-done{
+  position:absolute;top:8px;right:8px;width:19px;height:19px;border-radius:50%;
+  background:var(--jade);color:#fff;font-size:11px;line-height:19px;text-align:center;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);display:none;
+}
+.module-day-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:rgba(123,160,123,0.06);border:1px solid var(--border-light);
+  border-radius:var(--radius-sm);padding:9px 12px;margin:0 2px 14px;font-size:12px;line-height:1.5;
+}
+.mdb-dots{display:flex;gap:5px;}
+.mdb-dot{width:13px;height:13px;border-radius:50%;border:1.5px solid var(--border-light);background:transparent;flex:none;}
+.mdb-dot.on{background:var(--jade);border-color:var(--jade);}
+.mdb-txt{flex:1;min-width:120px;}
 
 /* ====== R29 · 今日时序分层（渐进披露） ====== */
 /* R34: 吸顶——滚动时时段切换条钉在 tab-nav 下方，随时可切换早/日/晚 */
@@ -2888,26 +2904,31 @@ body.guest-mode .add-btn-fab{display:none;}
           <div class="ql-icon" data-page-node-id="S1ztKrkoDub8jw0ekDm8VY">🔇</div>
           <div class="ql-title" data-page-node-id="7D78s8zRgO1PWPJJWB2X4E">无己台</div>
           <div class="ql-desc" data-page-node-id="rSEfMwLsdx7C4pBABj6JDq">情绪上来 · 破执念</div>
+          <span class="ql-done" data-qk="wuji">✓</span>
         </div>
         <div class="quick-link" onclick="goToModule('qiwu')" data-page-node-id="ogl45HsAeGNNHV6UDBIykF">
           <div class="ql-icon" data-page-node-id="Tkxlvwj1WkfDnADSCn53DI">⚖️</div>
           <div class="ql-title" data-page-node-id="IZQ3VmuvG9yda4al3DGWmr">齐物台</div>
           <div class="ql-desc" data-page-node-id="AbyyCe4LiA5jlySC9Big4Z">人际矛盾 · 破是非</div>
+          <span class="ql-done" data-qk="qiwu">✓</span>
         </div>
         <div class="quick-link" onclick="goToModule('shunshi')" data-page-node-id="rM6VLxo4S0ajJtnwDih5Qt">
           <div class="ql-icon" data-page-node-id="KpGcCKfo2Vmt7cAklgAEdp">🔪</div>
           <div class="ql-title" data-page-node-id="JyZd1DIzqEUBG5oPetHpr0">顺势台</div>
           <div class="ql-desc" data-page-node-id="91TojBGivo3HxE4WAszPI2">工作吃力 · 庖丁解牛</div>
+          <span class="ql-done" data-qk="shunshi">✓</span>
         </div>
         <div class="quick-link" onclick="goToModule('yangsheng')" data-page-node-id="df6j6g20o7KtjZYMLLXJIP">
           <div class="ql-icon" data-page-node-id="wHKvMDL2DVCq4xzCElqcB0">🌿</div>
           <div class="ql-title" data-page-node-id="bkODk0fhMqM2roIliSCfJ7">养生台</div>
           <div class="ql-desc" data-page-node-id="6isZi5j17g8JD5IzYRO4sC">身心疲惫 · 守精气神</div>
+          <span class="ql-done" data-qk="yangsheng">✓</span>
         </div>
         <div class="quick-link" onclick="goToModule('xiaoyao')" data-page-node-id="wLUznbJXBGf0zTCaWvUOHz">
           <div class="ql-icon" data-page-node-id="MTXI1FH3YSGC629FS2puAj">☁️</div>
           <div class="ql-title" data-page-node-id="M71QhM5w8jPRLTV2477LPr">逍遥台</div>
           <div class="ql-desc" data-page-node-id="Em5PGWtqk9uZLSYEnCx0dL">睡前锚定 · 心归逍遥</div>
+          <span class="ql-done" data-qk="xiaoyao">✓</span>
         </div>
       </div>
     </div>
@@ -3167,6 +3188,9 @@ body.guest-mode .add-btn-fab{display:none;}
       <button class="sub-tab-btn" data-module="yangsheng" data-page-node-id="b8EaV7jwC0JhyVCdCKTnJ0">养生 · 守神</button>
       <button class="sub-tab-btn" data-module="xiaoyao" data-page-node-id="S95laBmTG9Yp1Z4udTwJHM">逍遥 · 锚定</button>
     </div>
+
+    <!-- R35: 今日五修进度（与晚间打卡联动，白天随手修即点亮） -->
+    <div class="module-day-bar" id="moduleDayBar"></div>
 
     <!-- MODULE 1: 无己 -->
     <div class="module-panel active module-wuji" id="panel-wuji" data-page-node-id="FzdOveigYLVMz9hIntLwQf">
@@ -3452,6 +3476,7 @@ body.guest-mode .add-btn-fab{display:none;}
       </div>
       <div class="hint" data-page-node-id="iIaTq3lFa3WzBq644YHgRH">本周一页纸 · 修行 / 心境 / 支出 / 联系（与上周对照）</div>
       <div id="weeklyDigest" data-page-node-id="i8Q6tnStEB8joDHl69cPRr"></div>
+      <button class="btn btn-gold btn-sm" style="width:100%;margin-top:10px;" onclick="genWeeklyCard()" data-page-node-id="r35weeklybtn">🖼 生成本周小结 · 分享卡</button>
     </div>
 
     <!-- Mood Trend Chart -->
@@ -3982,7 +4007,10 @@ body.guest-mode .add-btn-fab{display:none;}
           <div style="font-size:12px;margin-top:4px;opacity:.85;" data-page-node-id="XxMK9yD6xNTafhULqxFWVC">点滴记下，方知财从何来、往何去</div>
         </div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-top:8px;" onclick="openFinanceModal()" data-page-node-id="P0gQe6GqDCOosM9nY1zNsw">+ 记一笔</button>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-primary" style="flex:1;" onclick="openFinanceModal()" data-page-node-id="P0gQe6GqDCOosM9nY1zNsw">+ 记一笔</button>
+        <button class="btn btn-ghost" style="flex:1;font-size:13px;white-space:nowrap;" onclick="quickAddFinance(1)" data-page-node-id="r35finback" title="昨天漏记？快速补上">↩ 补记昨天</button>
+      </div>
     </div>
 
     <!-- Memorial days panel -->
@@ -5296,6 +5324,7 @@ function switchTab(tabName){
   window.scrollTo(0,0);
   
   if(tabName === _S('dG9kYXk=')) renderToday();
+  if(tabName === _S('bW9kdWxlcw==')) renderDayXiu();
   if(tabName === _S('Z3Jvd3Ro')) switchGrowthTab(growthPanel || currentGrowthTab);
   if(tabName === _S('bGlmZQ==')) renderLife();
 }
@@ -5592,6 +5621,37 @@ function renderProgress(){
     title.textContent = _S('5LuK5pel5LqU6aG55ZyG5ruhIOKcpg==');
     hint.textContent = _S('5bey6Kej6ZSB44CM5b2T5pel6YCN6YGl5b+D5aKD44CN');
   }
+  renderDayXiu();
+}
+
+/* ====== R35 包A：五修进度显性化（今日速入角标 + 修心页五修条） ====== */
+function renderDayXiu(){
+  var keys=[_S('d3VqaQ=='),_S('cWl3dQ=='),_S('c2h1bnNoaQ=='),_S('eWFuZ3NoZW5n'),_S('eGlhb3lhbw==')];
+  var labels={wuji:_S('5peg5bex'),qiwu:_S('6b2Q54mp'),shunshi:_S('6aG65Yq/'),yangsheng:_S('5YW755Sf'),xiaoyao:_S('6YCN6YGl')};
+  var rec=getTodayRecord();
+  var done=0, miss=[];
+  keys.forEach(function(k){
+    if(rec.checkin[k]&&rec.checkin[k].done){ done++; } else { miss.push(labels[k]); }
+  });
+  /* 今日页速入卡角标：随起随修即点亮，晚间一眼补漏 */
+  document.querySelectorAll(_S('LnF1aWNrLWxpbms=')).forEach(function(ql){
+    var mk=ql.getAttribute(_S('b25jbGljaw=='))||_S('');
+    var m=mk.match(/goToModule\('([a-z]+)'\)/);
+    if(!m) return;
+    var dot=ql.querySelector(_S('LnFsLWRvbmU='));
+    if(dot){ dot.style.display=(rec.checkin[m[1]]&&rec.checkin[m[1]].done)?_S('ZmxleA=='):_S('bm9uZQ=='); }
+  });
+  var bar=document.getElementById(_S('bW9kdWxlRGF5QmFy'));
+  if(!bar) return;
+  var dots=_S('');
+  keys.forEach(function(k){
+    dots+=_S('PHNwYW4gY2xhc3M9Im1kYi1kb3Q=')+(rec.checkin[k]&&rec.checkin[k].done?_S('IG9u'):_S(''))+_S('IiB0aXRsZT0i')+labels[k]+_S('5bey5L+uIj48L3NwYW4+');
+  });
+  var txt;
+  if(done===0) txt=_S('PHNwYW4gY2xhc3M9InRleHQtZmFkZWQiPuS6lOS/ruWwmuacquW8gOWniyDigJTigJQg6ZqP5omL6K6w5LiL5LiA5qyh6KeJ5a+f77yM5Y2z566X5LiA5L+uPC9zcGFuPg==');
+  else if(done<5) txt=_S('PHNwYW4+5LuK5pelIDxiPg==')+done+_S('LzU8L2I+IMK3IOi/mOW3ru+8mjwvc3Bhbj48c3BhbiBzdHlsZT0iY29sb3I6dmFyKC0tZ29sZCk7Zm9udC13ZWlnaHQ6Ym9sZDsiPg==')+miss.join(_S('44CB'))+_S('PC9zcGFuPg==');
+  else txt=_S('PHNwYW4gc3R5bGU9ImNvbG9yOnZhcigtLWphZGUpO2ZvbnQtd2VpZ2h0OmJvbGQ7Ij7inKYg5LuK5pel5LqU5L+u5ZyG5ruh77yM5pma6Ze05Y+v5a6J5b+D5aSN55uYPC9zcGFuPg==');
+  bar.innerHTML=_S('PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2NvbG9yOnZhcigtLWluay1mYWRlZCk7bGV0dGVyLXNwYWNpbmc6MXB4O2ZsZXg6bm9uZTsiPuS7iuaXpeS6lOS/rjwvc3Bhbj48c3BhbiBjbGFzcz0ibWRiLWRvdHMiPg==')+dots+_S('PC9zcGFuPjxzcGFuIGNsYXNzPSJtZGItdHh0Ij4=')+txt+_S('PC9zcGFuPg==');
 }
 
 function renderEveningStatus(){
@@ -6537,6 +6597,93 @@ function renderWeeklyDigest(){
   else if(p.exp>0&&c.exp>p.exp*1.3) q=_S('5pys5ZGo5pSv5Ye65LiK6KGM4oCU4oCU44CM54mp54mp6ICM5LiN54mp5LqO54mp44CN77yM5YiG5riF5oOz6KaB5LiO6ZyA6KaB44CC');
   h+=_S('PGRpdiBzdHlsZT0icGFkZGluZy10b3A6OHB4O2ZvbnQtc2l6ZToxMnB4O2NvbG9yOnZhcigtLWdvbGQpOyI+')+q+_S('PC9kaXY+');
   el.innerHTML=h;
+}
+
+/* ====== R35 包B：逍遥周报 · 本周小结分享长图 ====== */
+function _ymdToMd(s){ var p=String(s).split(_S('LQ==')); return parseInt(p[1],10)+_S('5pyI')+parseInt(p[2],10)+_S('5pel'); }
+function _wrap2(ctx, text, maxW){
+  if(ctx.measureText(text).width <= maxW) return [text];
+  var lines=[], cur=_S('');
+  for(var i=0;i<text.length;i++){
+    var ch=text.charAt(i);
+    if(ctx.measureText(cur+ch).width>maxW && cur){ lines.push(cur); cur=ch; }
+    else cur+=ch;
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+function genWeeklyCard(){
+  var r=weekRangeStr(0), c=sumWeek(r), p=sumWeek(weekRangeStr(-1));
+  var any=c.active||c.moods.length||c.exp>0||c.ct>0||c.batN>0;
+  if(!any){ showToast(_S('5pys5ZGo5pqC5peg6K6w5b2V77yM5YWI5a6M5oiQ5Yeg5pel5omT5Y2h77yM5ZGo5oql6Ieq5Lya55Sf6ZW/'),_S('aW5mbw==')); return; }
+  var q=_S('44CM6Z2Z5YiZ5piO77yM5piO5YiZ6Jma77yM6Jma5YiZ5peg5Li66ICM5peg5LiN5Li644CC44CN');
+  if(c.avg>=7) q=_S('6YCN6YGl6Iul5rC077ya5pys5ZGo5b+D56iz77yM5riF6aOO5b6Q5p2l44CC');
+  else if(c.avg&&c.avg<=3.5) q=_S('5b+D57Sv5LmL5pe277yM5YWI5YGc5LiA5YGc4oCU4oCU5LiL5ZGo5YeP5LiA5LqL44CB5oWi5LiA5q2l44CC');
+  else if(c.perfect>=2) q=_S('5ZyG5ruh5pWw5pel5bey5b6X77yM5Yqf5aSr5Y6f5Zyo57uG5rC06ZW/5rWB44CC');
+  else if(p.exp>0&&c.exp>p.exp*1.3) q=_S('5pys5ZGo5pSv5Ye65LiK6KGM4oCU4oCU44CM54mp54mp6ICM5LiN54mp5LqO54mp44CN77yM5YiG5riF5oOz6KaB5LiO6ZyA6KaB44CC');
+  var rows=[];
+  rows.push({icon:_S('8J+qtw=='),label:_S('5L+u6KGM'),main:(c.active?c.active+_S('IOWkqQ=='):_S('4oCU'))+(c.perfect?_S('ICDCtyAg5ZyG5ruhIA==')+c.perfect+_S('IOWkqQ=='):_S('')),trail:(p.active?_S('5LiK5ZGoIA==')+p.active+_S('IOWkqQ=='):_S(''))});
+  var mT=c.avg?c.avg.toFixed(1):_S('4oCU');
+  var mTrail=_S('');
+  if(p.avg&&c.avg) mTrail=c.avg>p.avg?(_S('5LiK5ZGoIA==')+p.avg.toFixed(1)+_S('IOKWsg==')):(c.avg<p.avg?(_S('5LiK5ZGoIA==')+p.avg.toFixed(1)+_S('IOKWvA==')):_S('5LiO5LiK5ZGo5oyB5bmz'));
+  else if(p.avg) mTrail=_S('5LiK5ZGoIA==')+p.avg.toFixed(1);
+  rows.push({icon:_S('4piB77iP'),label:_S('5bmz5Z2H5b+D5aKD'),main:mT+_S('IC8gMTA='),trail:mTrail});
+  var eT=_S('wqU=')+(c.exp?c.exp.toFixed(2):_S('MC4wMA=='));
+  var eTrail=_S('');
+  if(p.exp>0){ var pct=Math.round(Math.abs(c.exp-p.exp)/p.exp*100); eTrail=c.exp>p.exp?(_S('5LiK5ZGoIMKl')+p.exp.toFixed(2)+_S('IMK3IOWiniA=')+pct+_S('JQ==')):(c.exp<p.exp?(_S('5LiK5ZGoIMKl')+p.exp.toFixed(2)+_S('IMK3IOWHjyA=')+pct+_S('JQ==')):_S('5LiO5LiK5ZGo5oyB5bmz')); }
+  rows.push({icon:_S('8J+SsA=='),label:_S('5pSv5Ye6'),main:eT,trail:eTrail});
+  rows.push({icon:_S('8J+knQ=='),label:_S('6IGU57O7'),main:c.ct?(Object.keys(c.who).length+_S('IOS6uiDCtyA=')+c.ct+_S('IOasoQ==')):_S('4oCU'),trail:(p.ct?_S('5LiK5ZGoIA==')+p.ct+_S('IOasoQ=='):_S(''))});
+  if(c.batN||p.batN){
+    var bT=c.batN?((c.bat>0?_S('Kw=='):_S(''))+c.bat):_S('4oCU');
+    rows.push({icon:_S('8J+Uiw=='),label:_S('56S+5Lqk5YeA6IO9'),main:bT,trail:(p.batN?_S('5LiK5ZGoIA==')+(p.bat>0?_S('Kw=='):_S(''))+p.bat:_S(''))});
+  }
+  var W=1000, pad=64;
+  var H=118+40+rows.length*86+170;
+  var canvas=document.createElement(_S('Y2FudmFz'));
+  canvas.width=W; canvas.height=H;
+  var ctx=canvas.getContext(_S('MmQ='));
+  /* 底色与顶饰 */
+  ctx.fillStyle=_S('I2ZkZjlmMA=='); ctx.fillRect(0,0,W,H);
+  ctx.fillStyle=_S('I2I4OTQyZQ=='); ctx.fillRect(0,0,W,6);
+  /* 标题 */
+  ctx.textAlign=_S('Y2VudGVy');
+  ctx.fillStyle=_S('IzZhOGNhZg=='); ctx.font=_S('MzRweCBzZXJpZg==');
+  ctx.fillText(_S('4piB'), W/2-12, 78);
+  ctx.fillStyle=_S('IzM4MzYyZg=='); ctx.font=_S('Ym9sZCA0NnB4IHNlcmlm');
+  ctx.fillText(_S('6YCN6YGl5ZGo5oql'), W/2+16, 82);
+  ctx.fillStyle=_S('IzhiODY3Nw=='); ctx.font=_S('MjRweCBzZXJpZg==');
+  ctx.fillText(_ymdToMd(r.a)+_S('IOKAlCA=')+_ymdToMd(r.b)+_S('IMK3IOacrOWRqOS4gOmhtee6uA=='), W/2, 122);
+  ctx.strokeStyle=_S('I2U2ZGZjZQ=='); ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad,150); ctx.lineTo(W-pad,150); ctx.stroke();
+  /* 数据行 */
+  ctx.textAlign=_S('bGVmdA==');
+  var y=150+66;
+  for(var i=0;i<rows.length;i++){
+    var row=rows[i];
+    ctx.textAlign=_S('bGVmdA==');
+    ctx.fillStyle=_S('IzM4MzYyZg=='); ctx.font=_S('MjRweCBzZXJpZg==');
+    ctx.fillText(row.icon+_S('ICA=')+row.label, pad, y);
+    /* 右栏：上周对比小字 + 本行主值 */
+    ctx.textAlign=_S('cmlnaHQ=');
+    if(row.trail){ ctx.fillStyle=_S('IzhiODY3Nw=='); ctx.font=_S('MTlweCBzZXJpZg=='); ctx.fillText(row.trail, W-pad, y-26); }
+    ctx.fillStyle=_S('IzM4MzYyZg=='); ctx.font=_S('Ym9sZCAzNHB4IHNlcmlm');
+    ctx.fillText(row.main, W-pad, y+2);
+    ctx.strokeStyle=_S('I2VmZTlkYg=='); ctx.beginPath(); ctx.moveTo(pad,y+34); ctx.lineTo(W-pad,y+34); ctx.stroke();
+    y+=86;
+  }
+  /* 金句 */
+  var qy=y+40;
+  ctx.fillStyle=_S('I2I4OTQyZQ=='); ctx.font=_S('aXRhbGljIDI2cHggc2VyaWY=');
+  var qLines=_wrap2(ctx,q,W-pad*2-40);
+  ctx.textAlign=_S('Y2VudGVy');
+  for(var li=0; li<qLines.length && li<2; li++){
+    ctx.fillText(qLines[li], W/2, qy+li*40);
+  }
+  /* 页脚 */
+  ctx.fillStyle=_S('I2IzYWM5Yw=='); ctx.font=_S('MjBweCBzZXJpZg==');
+  var now=new Date();
+  ctx.fillText(_S('4pymIOW6hOWtkOmAjemBpeS/ruW/g+W3peS9nOWPsCDCtyDnlJ/miJDkuo4g')+now.getMonth()+_S('5pyI')+now.getDate()+_S('5pel'), W/2, H-36);
+  openCardModal(canvas, _S('6YCN6YGl5ZGo5oqlXw=='));
 }
 
 function renderMoodChart(records, dates){
@@ -10607,6 +10754,7 @@ function renderFinance(){
     recHtml+=_S('PGRpdiBjbGFzcz0iZmluLXJlYy1pbmZvIj48ZGl2IGNsYXNzPSJmaW4tcmVjLWNhdCI+')+escapeHtml(r.category)+_S('PC9kaXY+PGRpdiBjbGFzcz0iZmluLXJlYy1ub3RlIj4=')+r.date+(r.note?_S('IMK3IA==')+escapeHtml(r.note):_S(''))+_S('PC9kaXY+PC9kaXY+');
     recHtml+=_S('PGRpdiBjbGFzcz0iZmluLXJlYy1hbW91bnQg')+r.type+_S('Ij4=')+(r.type===_S('ZXhwZW5zZQ==')?_S('LQ=='):_S('Kw=='))+_S('wqU=')+parseFloat(r.amount).toFixed(2)+_S('PC9kaXY+');
     recHtml+=_S('PGRpdiBzdHlsZT0iZGlzcGxheTpmbGV4O2dhcDoycHg7YWxpZ24taXRlbXM6Y2VudGVyOyI+');
+    recHtml+=_S('PGRpdiBzdHlsZT0iZm9udC1zaXplOjE1cHg7Y29sb3I6dmFyKC0tamFkZS1kYXJrKTtjdXJzb3I6cG9pbnRlcjttaW4td2lkdGg6MzhweDtoZWlnaHQ6MzhweDtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7Ym9yZGVyLXJhZGl1czo4cHg7IiBvbmNsaWNrPSJjb3B5RmluYW5jZVJlY29yZCgn')+r.id+_S('JykiIHRpdGxlPSLkuIDplK7lpI3orrDlkIzmrL4iPuKGuzwvZGl2Pg==');
     recHtml+=_S('PGRpdiBzdHlsZT0iZm9udC1zaXplOjE1cHg7Y29sb3I6dmFyKC0tZ29sZCk7Y3Vyc29yOnBvaW50ZXI7bWluLXdpZHRoOjM4cHg7aGVpZ2h0OjM4cHg7ZGlzcGxheTpmbGV4O2FsaWduLWl0ZW1zOmNlbnRlcjtqdXN0aWZ5LWNvbnRlbnQ6Y2VudGVyO2JvcmRlci1yYWRpdXM6OHB4OyIgb25jbGljaz0iZWRpdEZpbmFuY2VSZWNvcmQoJw==')+r.id+_S('JykiIHRpdGxlPSLnvJbovpEiPuKcjjwvZGl2Pg==');
     recHtml+=_S('PGRpdiBzdHlsZT0iZm9udC1zaXplOjE3cHg7Y29sb3I6dmFyKC0taW5rLWZhZGVkKTtjdXJzb3I6cG9pbnRlcjttaW4td2lkdGg6MzhweDtoZWlnaHQ6MzhweDtkaXNwbGF5OmZsZXg7YWxpZ24taXRlbXM6Y2VudGVyO2p1c3RpZnktY29udGVudDpjZW50ZXI7Ym9yZGVyLXJhZGl1czo4cHg7bWFyZ2luLWxlZnQ6MnB4OyIgb25jbGljaz0iZGVsZXRlRmluYW5jZVJlY29yZCgn')+r.id+_S('JykiIHRpdGxlPSLliKDpmaQiPuKclTwvZGl2PjwvZGl2PjwvZGl2Pg==');
   });
@@ -10877,6 +11025,41 @@ function exportFinanceCSV(){
     setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },100);
     showToast(_S('5bey5a+85Ye6IA==')+lifeData.finance.records.length+_S('IOadoei0puWNlQ=='),_S('c3VjY2Vzcw=='));
   }catch(e){ showToast(_S('5a+85Ye65aSx6LSl77yM5Y+v5oiq5Zu+5oiW5aSN5Yi26K6w5b2V'),_S('aW5mbw==')); }
+}
+/* ====== R35 包C：记账补记与一键复记 ====== */
+function _finDaysAgoStr(n){
+  var d=new Date(); d.setDate(d.getDate()-n);
+  return d.getFullYear()+_S('LQ==')+String(d.getMonth()+1).padStart(2,_S('MA=='))+_S('LQ==')+String(d.getDate()).padStart(2,_S('MA=='));
+}
+function quickAddFinance(daysAgo){
+  openFinanceModal();
+  var ds=_finDaysAgoStr(daysAgo);
+  document.getElementById(_S('ZmluRGF0ZUlucHV0')).value=ds;
+  /* 保存后让用户立刻看到：视口切到目标记录所在月 */
+  var dd=new Date(ds+_S('VDAwOjAwOjAw'));
+  var curY=new Date().getFullYear(), curM=new Date().getMonth();
+  var viewingCurrent=(finViewY===null&&finViewM===null);
+  if(!viewingCurrent||dd.getFullYear()!==curY||dd.getMonth()!==curM){
+    finViewY=dd.getFullYear(); finViewM=dd.getMonth();
+  }
+  renderFinance();
+  document.querySelector(_S('I2ZpbmFuY2VNb2RhbCAubW9kYWwtdGl0bGU=')).textContent=_S('6KGl6K6wIA==')+((daysAgo===1)?_S('5pio5aSp'):(daysAgo===2)?_S('5YmN5aSp'):(daysAgo+_S('5aSp5YmN')));
+}
+function copyFinanceRecord(id){
+  var r=lifeData.finance.records.find(function(x){return x.id===id;});
+  if(!r) return;
+  editingFinanceId=null;
+  var cats=lifeData.finance.categories[r.type]||[];
+  finType=r.type;
+  document.getElementById(_S('ZmluQW1vdW50SW5wdXQ=')).value=r.amount;
+  document.getElementById(_S('ZmluTm90ZUlucHV0')).value=r.note||_S('');
+  document.getElementById(_S('ZmluRGF0ZUlucHV0')).value=getToday();
+  selectFinType(r.type);
+  finCategory=(cats.indexOf(r.category)>=0)?r.category:cats[0];
+  renderFinCategoryPicker();
+  document.querySelector(_S('I2ZpbmFuY2VNb2RhbCAubW9kYWwtdGl0bGU=')).textContent=_S('5aSN6K6wIMK3IA==')+(FIN_CAT_ICONS[r.category]||_S('8J+SsA=='))+_S('IA==')+r.category;
+  document.getElementById(_S('ZmluYW5jZU1vZGFs')).classList.add(_S('c2hvdw==')); document.body.style.overflow=_S('aGlkZGVu');
+  setTimeout(function(){ var a=document.getElementById(_S('ZmluQW1vdW50SW5wdXQ=')); if(a) a.focus(); }, 150);
 }
 function openFinanceModal(){
   editingFinanceId=null;
