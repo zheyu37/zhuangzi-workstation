@@ -624,6 +624,16 @@ body:not(.guest-mode) #anchor-board{padding-top:56px;}
 .quick-link .ql-icon{font-size:24px;margin-bottom:6px;}
 .quick-link .ql-title{font-size:14px;font-weight:bold;}
 .quick-link .ql-desc{font-size:12px;color:var(--ink-faded);margin-top:2px;}
+/* ====== R37 · 日课一觉（每日微修行） ====== */
+.dq-main{display:flex;gap:12px;align-items:flex-start;margin-top:10px;}
+.dq-icon{font-size:26px;line-height:1.2;flex-shrink:0;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(196,163,90,0.1);border-radius:10px;}
+.dq-title{font-size:14.5px;font-weight:bold;color:var(--ink);}
+.dq-how{font-size:13px;line-height:1.7;color:var(--ink-light);margin-top:4px;}
+.dq-src{font-size:11px;color:var(--gold);opacity:0.85;margin-top:6px;letter-spacing:0.5px;}
+.dq-actions{margin-top:12px;display:flex;align-items:center;gap:10px;}
+.dq-done-btn{padding:8px 18px;border-radius:20px;border:1px solid var(--gold);background:transparent;color:var(--gold);font-size:13px;cursor:pointer;transition:var(--transition);white-space:nowrap;flex-shrink:0;}
+.dq-done-btn.done{background:var(--gold);color:#fff;}
+.dq-streak-note{font-size:11px;color:var(--ink-faded);}
 /* ====== R35 · 五修进度显性化 / 逍遥周报 / 记账快捷 ====== */
 .quick-link{position:relative;}
 .ql-done{
@@ -2938,6 +2948,15 @@ body.guest-mode .add-btn-fab{display:none;}
       </div>
     </div>
 
+    <!-- R37 · 日课一觉（每日微修行） -->
+    <div class="card" id="dailyQuestCard" data-page-node-id="dqCardR37">
+      <div class="card-title" data-page-node-id="dqTitleR37">
+        <span class="icon" style="background:rgba(196,163,90,0.15);color:var(--gold);" data-page-node-id="dqIconR37">觉</span>
+        今日一觉 · 日课
+      </div>
+      <div id="dqBody" data-page-node-id="dqBodyR37"></div>
+    </div>
+
     <!-- Emotion Quick Log -->
     <div class="card" data-page-node-id="SWiezlx1STGbc8f95oVvpK">
       <div class="card-title" data-page-node-id="qSSEw95M3BAVWdyCN7RUi7">
@@ -4532,8 +4551,12 @@ body.guest-mode .add-btn-fab{display:none;}
         <div data-page-node-id="PlgAOgEJEf4zZJKu9Oe7kX"><b data-page-node-id="upKHvv5IcpRKYf2hYajlsf">生活</b> — 日历记账、纪念日倒计时、备忘录</div>
       </div>
       <div class="onboard-step" data-page-node-id="PrNek1XKxOrekvgXL6WUCc">
-        <span class="onboard-icon" data-page-node-id="ZhEN55QJFEa5qRqVEZ5tqh">💾</span>
-        <div data-page-node-id="BG9aLbNl7oFGxaA3mouaXx"><b data-page-node-id="rfZyj092z2KDosefV4bCiF">数据自管</b> — 所有数据存于本地，可随时导出备份</div>
+        <span class="onboard-icon" data-page-node-id="ZhEN55QJFEa5qRqVEZ5tqh">📖</span>
+        <div data-page-node-id="dqOnboardR37"><b data-page-node-id="dqOnboardT37">日课</b> — 今日页每天一则两分钟微修行，随做随觉，贵在轻常</div>
+      </div>
+      <div class="onboard-step" data-page-node-id="dqOnboardKeep37">
+        <span class="onboard-icon" data-page-node-id="dqOnboardKeepI37">💾</span>
+        <div data-page-node-id="dqOnboardKeepD37"><b data-page-node-id="dqOnboardKeepT37">数据自管</b> — 所有数据存于本地，可随时导出备份</div>
       </div>
     </div>
     <button class="btn btn-gold" style="width:100%;font-size:16px;padding:12px;" onclick="closeOnboarding()" data-page-node-id="QyCxa0iaA5gsuG4aeBcwRZ">开始修行之旅 →</button>
@@ -5580,6 +5603,7 @@ function renderToday(){
   renderMorning();
   renderYesterdayRecap();
   renderDailyLesson();
+  renderDailyQuest();
   renderProgress();
   renderCheckin();
   renderReview();
@@ -5604,12 +5628,19 @@ function renderProgress(){
   var hint = document.getElementById(_S('cHJvZ3Jlc3NIaW50'));
   var streakEl = document.getElementById(_S('c3RyZWFrSW5saW5l'));
   if(streakEl){
-    var streak = calculateStreak(state.dailyRecords);
-    if(streak >= 2){
-      streakEl.textContent = _S('8J+UpSDov57nu63kv67ooYwg') + streak + _S('IOWkqSDCtyDli7/mlq3mraTpk74=');
+    var gs = calculateGentleStreak(state.dailyRecords);
+    var cs14 = recentConsistency(state.dailyRecords, 14);
+    var lastAct = lastActivityOffset(state.dailyRecords, 7);
+    if(gs.streak >= 2 && lastAct >= 0 && lastAct <= 1){
+      streakEl.textContent = _S('8J+UpSDolqrngavov57nu60g') + gs.streak + _S('IOWkqSDCtyDngavkvKDkuI3nn6XlhbblsL0=') +
+        (gs.forgiven ? _S('77yI5Lit5LyR5LiA5pel77yM5peg56KN77yJ') : _S('')) +
+        (cs14 > 0 && cs14 < 14 ? _S('IMK3IOi/keS4pOWRqCA=') + cs14 + _S('LzE0') : _S(''));
       streakEl.style.display = _S('aW5saW5lLWJsb2Nr');
-    } else if(streak === 1){
-      streakEl.textContent = _S('8J+UpSDov57nu63kv67ooYznrKwgMSDlpKkgwrcg5LuK5pel5Yu/5pat');
+    } else if(gs.streak === 1 && lastAct >= 0 && lastAct <= 1){
+      streakEl.textContent = _S('8J+UpSDolqrngavnrKwgMSDlpKkgwrcg5LuK5pel5re75LiA6Jaq');
+      streakEl.style.display = _S('aW5saW5lLWJsb2Nr');
+    } else if(lastAct >= 2){
+      streakEl.textContent = _S('8J+qlCDolqrngavmmoLmrYcgwrcg5LuK5pel5aSN54eD77yM5YmN5Yqf5LuN5Zyo');
       streakEl.style.display = _S('aW5saW5lLWJsb2Nr');
     } else {
       streakEl.style.display = _S('bm9uZQ==');
@@ -5627,6 +5658,152 @@ function renderProgress(){
     hint.textContent = _S('5bey6Kej6ZSB44CM5b2T5pel6YCN6YGl5b+D5aKD44CN');
   }
   renderDayXiu();
+}
+
+/* ====== R37 · 薪火连击（宽容连击，只用于展示，不影响成就判定） ====== */
+function dayHasActivity(records, ds){
+  var rec = records[ds];
+  if(!rec) return false;
+  return (rec.checkin && Object.keys(rec.checkin).some(function(k){ return rec.checkin[k].done; })) ||
+         (rec.morning && rec.morning.activated);
+}
+function dateStrOffset(i){
+  var d = new Date();
+  d.setDate(d.getDate() - i);
+  return d.getFullYear() + _S('LQ==') + String(d.getMonth()+1).padStart(2,_S('MA==')) + _S('LQ==') + String(d.getDate()).padStart(2,_S('MA=='));
+}
+/* 宽免机制：连击途中允许「中休一日」（只免一天，且缺口两侧都有修行才算宽免）——薪火喻，不以完美绑架 */
+function calculateGentleStreak(records){
+  var streak = 0, gapRun = 0, pendingGap = false, forgivenApplied = false;
+  for(var i = 0; i <= 365; i++){
+    if(dayHasActivity(records, dateStrOffset(i))){
+      streak++;
+      gapRun = 0;
+      if(pendingGap){ forgivenApplied = true; pendingGap = false; }
+    } else if(i === 0){
+      /* 今天还没修：不算断，向下看 */
+    } else {
+      gapRun++;
+      if(gapRun >= 2){ return {streak:streak, forgiven:forgivenApplied}; }
+      pendingGap = true;
+    }
+  }
+  return {streak:streak, forgiven:forgivenApplied};
+}
+function lastActivityOffset(records, limit){
+  for(var i = 0; i < limit; i++){
+    if(dayHasActivity(records, dateStrOffset(i))) return i;
+  }
+  return -1;
+}
+function recentConsistency(records, n){
+  var c = 0;
+  for(var i = 0; i < n; i++){ if(dayHasActivity(records, dateStrOffset(i))) c++; }
+  return c;
+}
+
+/* ====== R37 · 日课一觉（每日微修行，按日期轮转，独立存储键） ====== */
+var DAILY_QUESTS = [
+  {icon:_S('8J+rgQ=='), t:_S('6KeC5oGv5LiJ5YiG6ZKf'), how:_S('6Z2Z5Z2Q77yM5Y+q5pWw5ZG85ZC444CC5pWw5Yiw5Y2B77yM5LuO5aS05YaN5pWw77yM5pWw5ruh5LiJ5YiG6ZKf44CC'), src:_S('5b+D5paLIMK3IOS6uumXtOS4lg==')},
+  {icon:_S('8J+Wiw=='), t:_S('5ZG95ZCN5oOF57uq'), how:_S('5YaZ5LiL5q2k5Yi75oOF57uq55qE5ZCN5a2X77yM5aaC44CM54Sm6JmR44CN44CM5aeU5bGI44CN44CC6IO95ZG95ZCN77yM5bCx6IO95a6J5pS+44CC'), src:_S('5ZCN6ICF5a6e5LmL5a6+IMK3IOmAjemBpea4uA==')},
+  {icon:_S('8J+qkQ=='), t:_S('5Z2Q5b+Y5LiA5YiG6ZKf'), how:_S('5LuA5LmI5Lmf5LiN5YGa77yM5Lmf5LiN562J5LuA5LmI77yM5Y+q5piv5Z2Q5ruh5YWt5Y2B56eS44CC'), src:_S('5Z2Q5b+YIMK3IOWkp+Wul+W4iA==')},
+  {icon:_S('4piB77iP'), t:_S('55yL5LqR5LiN6K+E5Lu3'), how:_S('5oqs5aS055yL5LqR5LiA5YiG6ZKf44CC5LiN55yL5omL5py677yM5LiN5oOz5LqL5oOF77yM5Y+q55yL44CC'), src:_S('5LmY54mp5ri45b+DIMK3IOS6uumXtOS4lg==')},
+  {icon:_S('4pqW77iP'), t:_S('5piv6Z2e5LiA6Zeu'), how:_S('5oOz6LW35LuK5aSp55qE5LiA5aSE5LqJ6K6677yM6Zeu6Ieq5bex77ya44CM5LiA5a6a6KaB5YiG5Ye65a+56ZSZ5ZCX77yf44CN'), src:_S('6b2Q54mp6K66IMK3IOaYr+mdnuiOq+i+qA==')},
+  {icon:_S('8J+Uqg=='), t:_S('5bqW5LiB5LmL5YiA'), how:_S('5oOz5LiA5Lu25pyA6LS55Yqb55qE5LqL77yM6Zeu77ya44CM5a6D55qE57q56Lev5Zyo5ZOq77yf6aG6552A6LWw5Lya5oCO5qC377yf44CN'), src:_S('5bqW5LiB6Kej54mbIMK3IOWFu+eUn+S4uw==')},
+  {icon:_S('8J+qtQ=='), t:_S('5peg55So5LmL55So'), how:_S('5om+5LiA5Lu244CM5rKh55So44CN55qE5bCP54mp77yM55yL5a6D5LiA5YiG6ZKf44CC5peg55So5LmL55So77yM5pa55Li65aSn55So44CC'), src:_S('5peg55So5LmL55SoIMK3IOS6uumXtOS4lg==')},
+  {icon:_S('8J+Mig=='), t:_S('55u45b+Y5rGf5rmW'), how:_S('5oOz6LW35LiA5L2N5LmF5pyq6IGU57O755qE5pyL5Y+L77yM5b+D6YeM6YCB5LuW5LiA5Y+l56Wd56aP5Y2z5Y+v44CC'), src:_S('55u45b+Y5LqO5rGf5rmWIMK3IOWkp+Wul+W4iA==')},
+  {icon:_S('8J+Rgg=='), t:_S('5YWI5ZCs5a6M5YaN5byA5Y+j'), how:_S('5LuK5aSp6YGH5Yiw5YiG5q2n5pe277yM57uD5Lmg5oqK5a+55pa555qE6K+d5a6M5pW05ZCs5a6M5YaN5Zue5bqU44CC'), src:_S('5LiN6KiA5LmL6L6pIMK3IOm9kOeJqeiuug==')},
+  {icon:_S('8J+Ngg=='), t:_S('5a6J5pe25aSE6aG6'), how:_S('5oOz5LiA5Lu25LiN5aaC5oSP55qE5LqL77yM6L276L276K+05LiA5Y+l77ya44CM5LqL5LmL5Y+Y77yM5ZG95LmL6KGM5Lmf44CC44CN'), src:_S('5a6J5pe26ICM5aSE6aG6IMK3IOWFu+eUn+S4uw==')},
+  {icon:_S('8J+atg=='), t:_S('6YaJ6ICF5Z2g6L2m'), how:_S('6LWw6Lev5LqU5YiG6ZKf77yM5LiN55yL5omL5py644CC56We5YWo5LmL5Lq677yM6YGH5LqL5LiN5Lyk44CC'), src:_S('6YaJ6ICF5Z2g6L2mIMK3IOi+vueUnw==')},
+  {icon:_S('8J+qng=='), t:_S('55So5b+D6Iul6ZWc'), how:_S('5a+56ZWc5a2Q56yR5LiA5LiL77yM5YaN5oqK6L+Z5Lu95bmz6Z2Z55WZ57uZ6Ieq5bex44CC5LqL5p2l5YiZ5bqU77yM5LqL5Y675LiN6JeP44CC'), src:_S('6Iez5Lq65LmL55So5b+D6Iul6ZWcIMK3IOW6lOW4neeOiw==')},
+  {icon:_S('8J+PoQ=='), t:_S('6Jma5a6k55Sf55m9'), how:_S('5pW055CG5qGM6Z2i5LiA6KeS77yM5Y+q55WZ5bi455So5LmL54mp44CC5b+D5pyJ56m65aSE77yM5YWJ5omN6L+b5b6X5p2l44CC'), src:_S('6Jma5a6k55Sf55m9IMK3IOS6uumXtOS4lg==')},
+  {icon:_S('4pyN77iP'), t:_S('54Om5oG85LiA5YiS'), how:_S('5oqK5LuK5aSp55qE54Om5oG85YaZ5LiL5p2l77yM6K+75LiA6YGN77yM5YiS5o6J5YW25Lit5LiA5Liq6K+N44CC'), src:_S('5aSp5Zyw5LiA5oyHIMK3IOm9kOeJqeiuug==')},
+  {icon:_S('8J+MrA=='), t:_S('55yf5Lq65LmL5oGv'), how:_S('5rex5ZG85ZC45LiJ5qyh77yM5q+P5qyh5ZG85rCU5q+U5ZC45rCU6ZW/44CC6Li15oGv77yM5LuO6ISa5bqV5p2+5LiL5p2l44CC'), src:_S('55yf5Lq65LmL5oGv5Lul6Li1IMK3IOWkp+Wul+W4iA==')},
+  {icon:_S('8J+MsQ=='), t:_S('5p2Q5LiO5LiN5p2Q'), how:_S('5YaZ5LiL6Ieq5bex55qE5LiA5Liq44CM57y654K544CN77yM5oOz5oOz5a6D5LuA5LmI5pe25YCZ5biu6L+H5L2g44CC'), src:_S('5p2Q5LiO5LiN5p2Q5LmL6Ze0IMK3IOWxseacqA==')},
+  {icon:_S('8J+Otg=='), t:_S('6byT55uG6ICM5q2M'), how:_S('5ZCs5LiA6aaW5Zac5qyi55qE5q2M77yM5Y+q5ZCs77yM5LiN5YGa5LqL44CC'), src:_S('6byT55uG6ICM5q2MIMK3IOiHs+S5kA==')},
+  {icon:_S('8J+Qnw=='), t:_S('5r+g5LiK6KeC6bG8'), how:_S('55yL56qX5aSW5oiW6Lev5LiK55qE5bCP5Yqo54mp44CB6KGM5Lq677yM5pu/5a6D57yW5LiA5Y+l5b+D5LqL44CC'), src:_S('55+l6bG85LmL5LmQIMK3IOeni+awtA==')},
+  {icon:_S('8J+rmQ=='), t:_S('5aSn55Og5LmL55So'), how:_S('57uZ5omL6L655LiA5Lu25pmu6YCa5Lic6KW/77yM5oOz5LiA5Liq6I2S6K+e55qE5paw55So6YCU44CC'), src:_S('5aSn55Og5LmL56eNIMK3IOmAjemBpea4uA==')},
+  {icon:_S('8J+Nmg=='), t:_S('56ys5LiA5Y+j5Y+q5ZCD6aWt'), how:_S('5LiL5LiA6aG/6aWt55qE56ys5LiA5Y+j77yM5Y+q5bCd5ZGz6YGT77yM5LiN5oOz5Yir55qE44CC'), src:_S('6YGT5Zyo5bGO5rq6IMK3IOefpeWMl+a4uA==')},
+  {icon:_S('8J+OrQ=='), t:_S('5aSW5YyW5YaF5LiN5YyW'), how:_S('5LuK5aSp5a+55Lq65aSa5LiA5YiG56S85pWw77yM5b+D6YeM55WZ5LiA5Y+l77ya44CM5oiR6Ieq55+l5LmL44CC44CN'), src:_S('5aSW5YyW6ICM5YaF5LiN5YyWIMK3IOefpeWMl+a4uA==')},
+  {icon:_S('8J+UpQ=='), t:_S('6Jaq5bC954Gr5Lyg'), how:_S('552h5YmN5oOz6LW35LiA5L2N5b2x5ZON6L+H5L2g55qE5Lq677yM5Zyo5b+D6YeM6LCi5LuW5LiA5qyh44CC'), src:_S('5oyH56m35LqO5Li66JaqIMK3IOWFu+eUn+S4uw==')},
+  {icon:_S('8J+aqg=='), t:_S('57uD5Lmg6K+044CM5LiN44CN'), how:_S('5LuK5aSp5ouS57ud5LiA5Liq5bCP6K+35rGC77yM5oiW5pS25Zue5LiA5Y+l5pW36KGN55qE562U5bqU44CC'), src:_S('5pSv56a75YW25b63IMK3IOS6uumXtOS4lg==')},
+  {icon:_S('4piA77iP'), t:_S('5LiO5aSp5Li65b6S'), how:_S('5Yiw6Ziz5YWJ5LiL56uZ5Lik5YiG6ZKf77yM5LuA5LmI6YO95LiN5oOz44CC'), src:_S('5LiO5aSp5Li65b6SIMK3IOWkp+Wul+W4iA==')},
+  {icon:_S('8J+Mig=='), t:_S('5om/6K6k5LiN55+l6YGT'), how:_S('5om/6K6k5LuK5aSp5pyJ5LiA5Lu244CM5oiR5LiN55+l6YGT44CN55qE5LqL44CC55+l5q2i77yM6ICM5ZCO5pyJ5omA6L+b44CC'), src:_S('5LqV6JuZ5LiN5Y+v6K+t5rW3IMK3IOeni+awtA==')},
+  {icon:_S('8J+NtQ=='), t:_S('6K6w5LiA556s6IiS5pyN'), how:_S('6K6w5LiL5LuK5aSp5pyA5bmz5Yeh5Y206IiS5pyN55qE5LiA556s44CC6Iez5LmQ5peg5LmQ44CC'), src:_S('6Iez5LmQ5peg5LmQIMK3IOiHs+S5kA==')},
+  {icon:_S('8J+Rgg=='), t:_S('5ZCs5pyA6L+c55qE5aOw6Z+z'), how:_S('6Zet55y85LiA5YiG6ZKf77yM5ZCs546v5aKD6YeM5pyA6L+c55qE6YKj5Liq5aOw6Z+z44CC'), src:_S('5b+D5paL5ZCs5rCUIMK3IOS6uumXtOS4lg==')},
+  {icon:_S('8J+Qog=='), t:_S('5puz5bC+5LqO5raC'), how:_S('5a2m5LmM6b6f77yM5oWi5oWi5pGG5pGG5omL6ISa6aKI6IKp77yM5Ly45bGV5LiJ5Y2B56eS44CC'), src:_S('5puz5bC+5LqO5raCIMK3IOeni+awtA==')}
+];
+function questIndexOfDate(ds){
+  var h = 0;
+  for(var i = 0; i < ds.length; i++){ h = (h * 31 + ds.charCodeAt(i)) >>> 0; }
+  return h % DAILY_QUESTS.length;
+}
+function questStore(){
+  try{ return JSON.parse(localStorage.getItem(_S('emh1YW5nemlfcXVlc3RzX3Yx')) || _S('e30=')); }
+  catch(e){ return {}; }
+}
+function renderDailyQuest(){
+  var body = document.getElementById(_S('ZHFCb2R5'));
+  if(!body) return;
+  var ds = getToday();
+  var q = DAILY_QUESTS[questIndexOfDate(ds)];
+  var done = !!questStore()[ds];
+  body.innerHTML =
+    _S('PGRpdiBjbGFzcz0iZHEtbWFpbiI+') +
+      _S('PGRpdiBjbGFzcz0iZHEtaWNvbiI+') + q.icon + _S('PC9kaXY+') +
+      _S('PGRpdiBzdHlsZT0iZmxleDoxOyI+') +
+        _S('PGRpdiBjbGFzcz0iZHEtdGl0bGUiPg==') + q.t + _S('PC9kaXY+') +
+        _S('PGRpdiBjbGFzcz0iZHEtaG93Ij4=') + q.how + _S('PC9kaXY+') +
+        _S('PGRpdiBjbGFzcz0iZHEtc3JjIj7ilIDilIAg44CK5bqE5a2QIMK3IA==') + q.src + _S('44CLPC9kaXY+') +
+      _S('PC9kaXY+') +
+    _S('PC9kaXY+') +
+    _S('PGRpdiBjbGFzcz0iZHEtYWN0aW9ucyI+') +
+      _S('PGJ1dHRvbiBjbGFzcz0iZHEtZG9uZS1idG4=') + (done ? _S('IGRvbmU=') : _S('')) + _S('IiBpZD0iZHFCdG4iIG9uY2xpY2s9InRvZ2dsZURhaWx5UXVlc3QoKSI+') + (done ? _S('5LuK5pel5bey6KeJIOKckw==') : _S('5bey6KeJIMK3IOiusOS4i+i/meS4gOWIuw==')) + _S('PC9idXR0b24+') +
+      _S('PHNwYW4gY2xhc3M9ImRxLXN0cmVhay1ub3RlIj4=') + (done ? _S('5LiA6KeJ5bey5ZyG77yM5LiN5Lqm5LmQ5LmO') : _S('5q+P5pel5LiA5YiZ77yM5Lik5YiG6ZKf5YaFIMK3IOaYjuaXpeiHquaNouaWsOmimA==')) + _S('PC9zcGFuPg==') +
+    _S('PC9kaXY+');
+}
+function toggleDailyQuest(){
+  var ds = getToday();
+  var store = questStore();
+  if(store[ds]){
+    delete store[ds];
+    localStorage.setItem(_S('emh1YW5nemlfcXVlc3RzX3Yx'), JSON.stringify(store));
+    showToast(_S('5bey5pS25Zue44CC6KeJ5LiO5LiN6KeJ77yM55qG5peg5oyC56KN'), _S('aW5mbw=='));
+  } else {
+    store[ds] = true;
+    localStorage.setItem(_S('emh1YW5nemlfcXVlc3RzX3Yx'), JSON.stringify(store));
+    showToast(_S('5LuK5pel5LiA6KeJ5bey5ZyGIOKcpiDngavkvKDkuI3nhoQ='), _S('Z29sZA=='));
+  }
+  renderDailyQuest();
+}
+
+/* ====== R37 · PWA 快捷入口路由（?qa=finance/checkin/quest） ====== */
+function handleLaunchAction(){
+  try{
+    var sp = new URLSearchParams(location.search);
+    var qa = sp.get(_S('cWE='));
+    if(!qa) return;
+    sp.delete(_S('cWE='));
+    var rest = sp.toString();
+    window.history.replaceState({}, _S(''), location.pathname + (rest ? _S('Pw==') + rest : _S('')) + location.hash);
+    var authed = (typeof authState !== _S('dW5kZWZpbmVk')) && authState && authState.exp && authState.exp > Date.now();
+    if(!authed) return;
+    setTimeout(function(){
+      try{
+        if(qa === _S('ZmluYW5jZQ==')){
+          switchTab(_S('bGlmZQ==')); switchLifeTab(_S('ZmluYW5jZQ==')); openFinanceModal();
+        } else if(qa === _S('Y2hlY2tpbg==')){
+          switchTab(_S('dG9kYXk=')); setTodayFlow(_S('ZGF5'));
+          var el = document.querySelector(_S('LmNoZWNraW4tZ3JpZA==')) || document.querySelector(_S('LmNoZWNraW4taXRlbQ=='));
+          if(el) el.scrollIntoView({block:_S('Y2VudGVy')});
+        } else if(qa === _S('cXVlc3Q=')){
+          switchTab(_S('dG9kYXk='));
+          var q = document.getElementById(_S('ZGFpbHlRdWVzdENhcmQ='));
+          if(q) q.scrollIntoView({block:_S('Y2VudGVy')});
+        }
+      }catch(e){}
+    }, 600);
+  }catch(e){}
 }
 
 /* ====== R35 包A：五修进度显性化（今日速入角标 + 修心页五修条） ====== */
@@ -11878,6 +12055,7 @@ function init(){
   // Authorization check - must pass before app initializes
   if(!checkAuthOnLoad()) return;
   initAppContent();
+  handleLaunchAction();
 }
 
 // Run when DOM is ready
